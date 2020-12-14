@@ -50,6 +50,7 @@ namespace CurrencyExchange
             while (keepRunning)
             {
                 ConsoleWriter.WriteLine("Enter the date in format 'yyyy-mm-dd' For example 2020-12-12");
+                DATA:
                 var date = Console.ReadLine();
                 if (!string.IsNullOrEmpty(date))
                 {
@@ -57,12 +58,13 @@ namespace CurrencyExchange
 
                     //// Retrieve forex rate from Bank of Canada API
                     var data = _dataService.GetForexRateFromBankOfCanada(date).GetAwaiter().GetResult();
+
                     if (data == null || data.Count == 0)
                     {
                         ConsoleWriter.WriteLine($"No forex rate available for the {date}\r\n");
                         ConsoleWriter.WriteLine("Please enter another date\r\n");
-                        date = Console.ReadLine();
-                        data = _dataService.GetForexRateFromBankOfCanada(date).GetAwaiter().GetResult();
+                        goto DATA;
+
                     }
 
                     // Generate adjaceny list from the data.Note: data has equations and values
