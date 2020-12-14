@@ -30,7 +30,7 @@ namespace CurrencyExchange.Tests
 
 
             var sut = new ForexRateService(NullLogger<ForexRateService>.Instance);
-            var result = sut.TryFindForexRate("a", "e", ref product, graphData);
+            var result = sut.TryFindForexRateUsingRecursion("a", "e", ref product, graphData);
             Assert.True(result);
             Assert.Equal((decimal)10, product);
         }
