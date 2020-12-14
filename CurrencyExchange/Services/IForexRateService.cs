@@ -7,7 +7,7 @@ namespace CurrencyExchange.Services
 {
     public interface IForexRateService
     {
-        bool TryFindForexRate(string start, string end, ref decimal product, IDictionary<string, IList<Edge>> graph);
+        bool TryFindForexRateUsingRecursion(string start, string end, ref decimal product, IDictionary<string, IList<Edge>> graph);
         decimal TryFindForexRateUsingDijkstra(string start, string end, IDictionary<string, IList<Edge>> graph);
     }
 }

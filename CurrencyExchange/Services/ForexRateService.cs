@@ -27,8 +27,8 @@ namespace CurrencyExchange.Services
 
         }
 
-
-        public bool TryFindForexRate(string start, string end, ref decimal product, IDictionary<string, IList<Edge>> graph)
+        // Time complexity: O(V+E)
+        public bool TryFindForexRateUsingRecursion(string start, string end, ref decimal product, IDictionary<string, IList<Edge>> graph)
         {
 
 
@@ -41,8 +41,8 @@ namespace CurrencyExchange.Services
 
             if (!graph.ContainsKey(start) || !graph.ContainsKey(end))
             {
-
-                throw new ArgumentException("The key is not present in the registry");
+                product = -1;
+                return false;
             }
 
             //  Since we are given end node we can just use recursion to find the product
@@ -62,7 +62,7 @@ namespace CurrencyExchange.Services
                     visited.Add(edge.To);
                     // if running node equals end node
 
-                    if (TryFindForexRate(edge.To, end, ref product, graph))
+                    if (TryFindForexRateUsingRecursion(edge.To, end, ref product, graph))
                     {
                         if (visited.Count > 0) visited.Clear();
                         return true;
@@ -79,25 +79,30 @@ namespace CurrencyExchange.Services
         }
 
         // Time complexity: O(V+E)
+        // if used prioriy queue and comparable interface for node comparison , the complexity becomes O(VlogE)
         public decimal TryFindForexRateUsingDijkstra(string start, string end, IDictionary<string, IList<Edge>> graph)
         {
+            if (graph.Count == 0 || graph == null) return -1;
+            if (!graph.ContainsKey(start) || !graph.ContainsKey(end)) return -1;
+            if (start == end) return 1;
+            var visited = new HashSet<string>();
             var nodes = graph.Keys.ToArray();
             int n = graph.Count;
-            if (visited.Count > 0) visited.Clear();
-            var prev = new decimal[n];
-            Array.Fill(prev, decimal.MaxValue);
-            var queue = new Queue<string>();
+
+            var prev = new decimal[n * 2];
+            Array.Fill(prev, 1);
+            var queue = new Queue<Node>();
 
             //start by visiting the 'start' node and add it to the queue.
-            queue.Enqueue(start);
+            queue.Enqueue(new Node(start, 1));
             visited.Add(start);
             prev[0] = 1;
             while (queue.Count > 0)
             {
 
-                string node = queue.Dequeue();
+                Node node = queue.Dequeue();
 
-                var edges = graph[node];
+                var edges = graph[node.curr];
                 // loop through the edges connected to nodes.Edge.to has information about the neighbour
 
                 foreach (var edge in edges)
@@ -107,11 +112,12 @@ namespace CurrencyExchange.Services
 
                     var fromIdx = Array.IndexOf(nodes, edge.From);
                     var toIdx = Array.IndexOf(nodes, edge.To);
+
                     var newDist = prev[fromIdx] * edge.value;
-                    if (newDist < prev[toIdx])
+                    if (newDist != prev[toIdx])
                     {
                         prev[toIdx] = newDist;
-                        queue.Enqueue(edge.To);
+                        queue.Enqueue(new Node(edge.To, prev[toIdx]));
                         visited.Add(edge.To);
                     }
 
