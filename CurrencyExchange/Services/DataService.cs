@@ -31,6 +31,7 @@ namespace CurrencyExchange.Services
                 var stopWatch = new Stopwatch();
                 stopWatch.Start();
                 dynamic observe = await GetDynamicData(date, cancellationToken);
+                if (observe == null) return equations;
                 stopWatch.Stop();
                 _logger.LogInformation($"it takes {stopWatch.ElapsedMilliseconds / 1000} sec to retrieve forex rates\r\n");
 
