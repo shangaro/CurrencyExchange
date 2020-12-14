@@ -2,7 +2,12 @@
 {
     public class Node
     {
-        public string currency { get; set; }
-        public bool visited { get; set; }
+        public string curr { get; set; }
+        public decimal minValue { get; set; }
+        public Node(string mappedTo, decimal minValue)
+        {
+            this.curr = mappedTo;
+            this.minValue = minValue;
+        }
     }
 }
